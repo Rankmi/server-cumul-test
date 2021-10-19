@@ -1,4 +1,4 @@
-# server-cumul-test
+# Server Cumul Test
 
 ## Running project
 

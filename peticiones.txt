@@ -1,0 +1,45 @@
+temporal toen
+
+data = {
+    "action": "create",
+    "version": "0.1.0",
+    "key": KEY,
+    "token": TOKEN,  
+    "properties": {
+        "type": "temporary",
+        "securables": [
+        "0ed65fc0-9781-458e-8684-3075d7e98c83",
+        "e8e95086-8d7a-45b1-ac50-8a10c0d5349b",
+        "aab506ee-8fa1-47fa-b60a-1ae76477fb23",
+        "7746b22d-bb17-4595-b4dd-24f22b82cd9c"
+        ],
+        "expiry": "24 hours",
+        "inactivity_interval": "10 minutes",
+        "username": "jesus.huazano@rankmi.com",
+        "name": "Jesus Huazano",
+        "email": "jesus.huazano@rankmi.com"
+    }
+}
+
+{
+    "action":"create",
+    "version":"0.1.0",
+    "key": "< your API key >",
+    "token": "< your API token >",
+    "properties":{
+      "type": "sso",
+      "expiry": "24 hours",
+      "inactivity_interval": "10 minutes",
+      "username": "< A unique and immutable identifier for your end user >",
+      "name": "< end-user name >",
+      "email": "< end-user email >",
+      "suborganization": "< a suborganization name >",
+      "integration_id": "< integration id >",
+      "role": "viewer",
+      "account_overrides": { 
+        "< Your account_id >" : {
+          "host": "< The new database host to connect to. >"
+        }
+      }
+    }
+  }

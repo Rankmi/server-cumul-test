@@ -7,17 +7,12 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-'''
-KEY = "9932b264-c9dd-412f-9b4c-c4f030e19f26"
-TOKEN = "knbFEckkVDrqLNIYoSGiI06CN8icECXsGGkmICP5DCfrFsiITj6agRjWycYQICGIZMEIFGxkElL44WPNJJRT4OOWQBusAAQ7gQqhbG66tWGlsVkwmYNvhS68tpYmIbqfvdevoU8Xq8s6IIvPZQ1ns5"
-'''
-
-KEY = 'f08efe56-ed9d-44f3-818e-78f16ecf6b45'
-TOKEN = 'PjzEcZyAjsOgxQGe2a1DYvud2Bb9yahGm0OSXTSMPC9umc4LCCheGSnsEI2cNV404T2VKv0mQxGAXeOobmyHVW3NI7W4B0iAi8kCNBKwy84JUXT2VMxI8djIs4CwEwaZCG7masBFhH6JYq1ijHsb9h'
+KEY = ''
+TOKEN = ''
 
 BASE_URL = 'https://api.us.cumul.io/0.1.0/'
 
-CUSTOM_INTEGRATION = "fd1a18fa-a8f1-4ec9-9ecd-19669dc76ac3"
+CUSTOM_INTEGRATION = "< integration_id >"
 
 @app.route('/', methods=['GET'])
 def index():
@@ -231,8 +226,8 @@ def get_cumul_token_multitenancy():
 			"account_overrides": { 
 				"2de71311-daed-475e-81c5-9444ac95a15e" : {
 					"host": "cumul2.cetlhze6fmhm.us-east-2.rds.amazonaws.com",
-					"port": "5432",
-					"user": "postgres",
+					"port": ""< port >"",
+					"user": "< usuario >",
 					"password": "sw123456",
 					"database": "sip",
 					"schema": "catalogos",
@@ -240,8 +235,8 @@ def get_cumul_token_multitenancy():
 				},
 				"0c3711d6-0dcd-462f-8da2-e9cc38b61841": {
 					"host": "cumul1.cetlhze6fmhm.us-east-2.rds.amazonaws.com",
-					"port": "5432",
-					"user": "postgres",
+					"port": ""< port >"",
+					"user": "< usuario >",
 					"password": "sw123456",
 					"database": "sip2",
 					"schema": "catalogos",
@@ -249,8 +244,8 @@ def get_cumul_token_multitenancy():
 				},
 				"32ac3cee-1a6f-46f0-8ef9-4be122a6bd7d":{
 					"host": "cumul1.cetlhze6fmhm.us-east-2.rds.amazonaws.com",
-					"port": "5432",
-					"user": "postgres",
+					"port": ""< port >"",
+					"user": "< usuario >",
 					"password": "sw123456",
 					"database": "sip2",
 					"schema": "catalogos",
@@ -291,31 +286,20 @@ def get_cumul_token_multitenancy_user1():
 	curl_object = pycurl.Curl()
 	post_data = request.get_json()
 
+
 	data = {
 	    "action": "create",
 	    "version": "0.1.0",
 	    "key": KEY,
 	    "token": TOKEN,  
 	    "properties": {
-	        "integration_id": "fd1a18fa-a8f1-4ec9-9ecd-19669dc76ac3",
-	        "type": "sso",
+	        "type": "temporary",
 	        "expiry": "24 hours",
-	        "inactivity_interval": "10 minutes",
-	        "username": "jesus.huazano@rankmi.com",
-	        "name": "Jesus Huazano",
-	        "email": "jesus.huazano@rankmi.com",
-	        "suborganization": "Air Force",
-	        "role": "viewer",
-			"account_overrides": { 
-				"2de71311-daed-475e-81c5-9444ac95a15e" : {
-					"datasets": {
-						"d43d8d98-ae55-4358-819d-7587d2df34c3" : {
-							"schema": "<schema>",
-							"table": "<table>"
-
-						}
-					}
-				}
+	        "inactivity_interval": "40 minutes",
+			"securables": ["< dashboards_id >"],
+			"metadata": {
+				"area": post_data['areas'],
+				"positions":[]
 			}
 	    }
 	}
@@ -329,45 +313,16 @@ def get_cumul_token_multitenancy_user1():
 	curl_object.close()
 
 	get_body = json.loads( bytes_object.getvalue().decode('utf8') )
+	print(get_body)
 
-	bytes_object = BytesIO()
-	curl_object = pycurl.Curl()
-
-	data = {                                       
-		"action": "get",
-		"version": "0.1.0",
-	    "key": KEY,
-	    "token": TOKEN,  
-		"find": {
-		"where": {
-			"id": "d43d8d98-ae55-4358-819d-7587d2df34c3",
-			"type": "dataset"
-		},
-		"include":[{
-			"model": "Column",
-			"attributes": ["name", "type"]
-		}],
-		"attributes": ["name", "rows", "created_at"]
-		}
-	}
-
-
-	curl_object.setopt(curl_object.URL, BASE_URL + 'securable')
-	curl_object.setopt(curl_object.HTTPHEADER, ['Content-Type: application/json','Accept-Charset: UTF-8'])
-	curl_object.setopt(curl_object.POSTFIELDS, json.dumps(data).encode('utf-8'))
-	curl_object.setopt(curl_object.WRITEDATA, bytes_object)
-	curl_object.perform() 
-	curl_object.close()
-
-	get_columns = json.loads( bytes_object.getvalue().decode('utf8') )
 
 	sso_id = get_body['id']
 	sso_token = get_body['token']
 	sso_user_id = get_body['user_id']
 
 	return jsonify({
-		"columns": get_columns,
 		"full": get_body,
+		"dashboard_id": "< dashboards_id >",
 		"sso_id": sso_id,
 		"sso_token": sso_token,
 		"sso_user_id": sso_user_id,
@@ -384,13 +339,13 @@ def get_cumul_token_multitenancy_user2():
 	curl_object = pycurl.Curl()
 	post_data = request.get_json()
 
+	'''
 	data = {
 	    "action": "create",
 	    "version": "0.1.0",
 	    "key": KEY,
 	    "token": TOKEN,  
 	    "properties": {
-	        "integration_id": "fd1a18fa-a8f1-4ec9-9ecd-19669dc76ac3",
 	        "type": "sso",
 	        "expiry": "24 hours",
 	        "inactivity_interval": "10 minutes",
@@ -398,14 +353,20 @@ def get_cumul_token_multitenancy_user2():
 	        "name": "Jesus Huazano 2",
 	        "email": "jesus.huazano2@rankmi.com",
 	        "suborganization": "Air Force",
+	        "integration_id": "< integration_id >",
 	        "role": "viewer",
 			"account_overrides": { 
-				"2de71311-daed-475e-81c5-9444ac95a15e" : {
+				"< account_id >" : {
+					"host": "< host >",
+					"port": "< port >",
+					"user": "< usuario >",
+					"password": "< password >",
+					"database": "< database >_112",
+					"schema": "< schema >",
+					"table": "< table >",
 					"datasets": {
-						"d43d8d98-ae55-4358-819d-7587d2df34c3" : {
-							"schema": "<schema>",
-							"table": "<table>"
-
+						"< dataset_id >": {
+							"sql": "< query >"
 						}
 					}
 				}
@@ -413,6 +374,47 @@ def get_cumul_token_multitenancy_user2():
 	    }
 	}
 
+	'''
+
+	data = {
+	    "action": "create",
+	    "version": "0.1.0",
+	    "key": KEY,
+	    "token": TOKEN,  
+	    "properties": {
+	        "type": "temporary",
+	        "expiry": "24 hours",
+	        "inactivity_interval": "40 minutes",
+	        "username": "jesus.huazano2@rankmi.com",
+	        "name": "Jesus Huazano 2",
+	        "email": "jesus.huazano2@rankmi.com",
+			"securables": ["< dashboards_id >"],
+			"metadata": {
+				"area": post_data['areas'],
+				"positions":[]
+			},
+			"account_overrides": { 
+				"< account_id >" : {
+					"host": "< host >",
+					"port": "< port >",
+					"user": "< usuario >",
+					"password": "< password >",
+					"database": "< database >",
+					"schema": "< schema >",
+					"table": "< table >",
+					"datasets": {
+						"< dataset_id >": {
+							"sql": "< query >"
+						}
+					}
+				}
+			}
+	    }
+	}
+
+	print("·"*300)
+	print(data)
+	print("·"*300)
 
 	curl_object.setopt(curl_object.URL, BASE_URL + 'authorization')
 	curl_object.setopt(curl_object.HTTPHEADER, ['Content-Type: application/json','Accept-Charset: UTF-8'])
@@ -423,43 +425,12 @@ def get_cumul_token_multitenancy_user2():
 
 	get_body = json.loads( bytes_object.getvalue().decode('utf8') )
 
-	bytes_object = BytesIO()
-	curl_object = pycurl.Curl()
-
-	data = {                                       
-		"action": "get",
-		"version": "0.1.0",
-	    "key": KEY,
-	    "token": TOKEN,  
-		"find": {
-		"where": {
-			"id": "d43d8d98-ae55-4358-819d-7587d2df34c3",
-			"type": "dataset"
-		},
-		"include":[{
-			"model": "Column",
-			"attributes": ["name", "type"]
-		}],
-		"attributes": ["name", "rows", "created_at"]
-		}
-	}
-
-
-	curl_object.setopt(curl_object.URL, BASE_URL + 'securable')
-	curl_object.setopt(curl_object.HTTPHEADER, ['Content-Type: application/json','Accept-Charset: UTF-8'])
-	curl_object.setopt(curl_object.POSTFIELDS, json.dumps(data).encode('utf-8'))
-	curl_object.setopt(curl_object.WRITEDATA, bytes_object)
-	curl_object.perform() 
-	curl_object.close()
-
-	get_columns = json.loads( bytes_object.getvalue().decode('utf8') )
-
 	sso_id = get_body['id']
 	sso_token = get_body['token']
 	sso_user_id = get_body['user_id']
 
 	return jsonify({
-		"columns": get_columns,
+		"dashboard_id": "< dashboards_id >",
 		"full": get_body,
 		"sso_id": sso_id,
 		"sso_token": sso_token,
@@ -483,24 +454,31 @@ def get_cumul_token_multitenancy_user3():
 	    "key": KEY,
 	    "token": TOKEN,  
 	    "properties": {
-	        "integration_id": "fd1a18fa-a8f1-4ec9-9ecd-19669dc76ac3",
-	        "type": "sso",
+	        "type": "temporary",
 	        "expiry": "24 hours",
-	        "inactivity_interval": "10 minutes",
+	        "inactivity_interval": "40 minutes",
 	        "username": "jesus.huazano3@rankmi.com",
 	        "name": "Jesus Huazano 3",
 	        "email": "jesus.huazano3@rankmi.com",
-	        "suborganization": "Air Force",
-	        "role": "viewer",
+			"securables": ["< dashboards_id >"],
+			"metadata": {
+				"area": [],
+				"positions":[]
+			},
 			"account_overrides": { 
-				"2de71311-daed-475e-81c5-9444ac95a15e" : {
-					"host": "<host>",
-					"port": "5432",
-					"user": "postgres",
-					"password": "123456",
-					"database": "<db<",
-					"schema": "<schema>",
-					"table": "<table>"
+				"< account_id >" : {
+					"host": "< host >",
+					"port": "< port >",
+					"user": "< usuario >",
+					"password": "< password >",
+					"database": "< database >",
+					"schema": "< schema >",
+					"table": "< table >",
+					"datasets": {
+						"< dataset_id >": {
+							"sql": "< query >"
+						}
+					}
 				}
 			}
 	    }
@@ -515,44 +493,14 @@ def get_cumul_token_multitenancy_user3():
 	curl_object.close()
 
 	get_body = json.loads( bytes_object.getvalue().decode('utf8') )
-
-	bytes_object = BytesIO()
-	curl_object = pycurl.Curl()
-
-	data = {                                       
-		"action": "get",
-		"version": "0.1.0",
-	    "key": KEY,
-	    "token": TOKEN,  
-		"find": {
-		"where": {
-			"id": "d43d8d98-ae55-4358-819d-7587d2df34c3",
-			"type": "dataset"
-		},
-		"include":[{
-			"model": "Column",
-			"attributes": ["name", "type"]
-		}],
-		"attributes": ["name", "rows", "created_at"]
-		}
-	}
-
-
-	curl_object.setopt(curl_object.URL, BASE_URL + 'securable')
-	curl_object.setopt(curl_object.HTTPHEADER, ['Content-Type: application/json','Accept-Charset: UTF-8'])
-	curl_object.setopt(curl_object.POSTFIELDS, json.dumps(data).encode('utf-8'))
-	curl_object.setopt(curl_object.WRITEDATA, bytes_object)
-	curl_object.perform() 
-	curl_object.close()
-
-	get_columns = json.loads( bytes_object.getvalue().decode('utf8') )
+	print(get_body)
 
 	sso_id = get_body['id']
 	sso_token = get_body['token']
 	sso_user_id = get_body['user_id']
 
 	return jsonify({
-		"columns": get_columns,
+		"dashboard_id": "< dashboards_id >",
 		"full": get_body,
 		"sso_id": sso_id,
 		"sso_token": sso_token,
